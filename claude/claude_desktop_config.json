@@ -4,10 +4,12 @@
       "command": "npx",
       "args": [
         "-y",
-        "@jtraderai/jtrader-mcp-server"
+        "@jtrader.ai/mcp"
       ],
       "env": {
-        "JTRADER_API_KEY": "your_api_key_here_if_needed"
+        "JTRADER_API_KEY": "your_api_key_here_if_needed",
+        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere",
+        "JTRADER_REQUIRE_APPROVAL": "true"
       }
     }
   }

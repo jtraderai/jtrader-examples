@@ -21,8 +21,13 @@ It connects to the JTrader MCP server and uses `node-cron` to automatically wake
    Create a `.env` file in this directory and add your necessary API keys.
    ```bash
    GEMINI_API_KEY="your_google_gemini_api_key"
-   JTRADER_API_KEY="your_jtrader_api_key_if_needed"
+   JTRADER_API_KEY="your_jtrader_api_key_here" # Optional if you are providing a wallet private key for SIWX
+   JTRADER_WALLET_PRIVATE_KEY="0xYourWalletPrivateKeyHere"
+   JTRADER_REQUIRE_APPROVAL="false"
+   JTRADER_MAX_SPEND_LIMIT="2.0"
+   JTRADER_MAX_SESSION_SPEND="5.0"
    ```
+   > **⚠️ SECURITY WARNING:** Never commit your `.env` file if it contains a real private key. Your private key should remain secure and only be stored in your local environment.
 
 ## Running the Agent
 

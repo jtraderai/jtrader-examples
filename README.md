@@ -14,6 +14,6 @@ The Model Context Protocol (MCP) allows AI models to securely access JTrader's r
 
 Most integrations require you to provide the command to start the MCP server. If you have Node.js installed, the standard command is:
 ```bash
-npx -y @jtraderai/jtrader-mcp-server
+npx -y @jtrader.ai/mcp
 ```
 *(If your server requires environment variables like API keys, be sure to set them in the respective configuration files.)*

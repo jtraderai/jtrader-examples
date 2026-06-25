@@ -4,16 +4,31 @@
 
 ## Setup Instructions
 
-Antigravity natively supports lazily and eagerly loaded MCP tools through schemas defined in its internal configuration.
+To use this server with Google Antigravity, add the configuration to your global `mcp_config.json` (typically located in `~/.gemini/config/mcp_config.json` on Windows/Linux or `~/.config/gemini/mcp_config.json` on macOS).
 
-1. **Locate your MCP Configuration Root:**
-   Depending on your setup, this is located at `C:\Users\<User>\.gemini\antigravity\mcp\`.
+1. **Edit `mcp_config.json`:**
+   Add the following configuration to the `mcpServers` object in the file. Create the file if it does not exist.
 
-2. **Add the Server Configuration:**
-   Inside the `mcp/` directory, create a folder named `jtrader`.
-   Inside this `jtrader` folder, you can place the JSON schemas (`<toolName>.json`) for each of your JTrader MCP tools, alongside an optional `instructions.md` file that provides best practices for the agent on how to use them.
+```json
+{
+  "mcpServers": {
+    "jtrader": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@jtrader.ai/mcp"
+      ],
+      "env": {
+        "JTRADER_API_KEY": "your_api_key_here_if_needed",
+        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere",
+        "JTRADER_REQUIRE_APPROVAL": "true"
+      }
+    }
+  }
+}
+```
 
-   By registering these schemas, Antigravity will automatically be aware of the JTrader tools and can call them via its `call_mcp_tool` command.
+> **⚠️ SECURITY WARNING:** Never commit this configuration file if it contains a real private key. Your private key should remain secure and only be stored in your local environment.
 
 ## Usage
 

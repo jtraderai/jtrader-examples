@@ -12,7 +12,7 @@ You can configure the MCP server in Cursor via the graphical Settings interface,
 4. Fill out the configuration fields:
    * **Name:** `jtrader`
    * **Type:** `command`
-   * **Command:** `npx -y @jtraderai/jtrader-mcp-server`
+   * **Command:** `npx -y @jtrader.ai/mcp`
 5. Click **Save**.
 6. Ensure the green indicator dot appears next to the `jtrader` server, showing it has connected successfully.
 
@@ -32,10 +32,12 @@ You can also define the MCP server using an `mcp.json` file. This allows you to 
       "command": "npx",
       "args": [
         "-y",
-        "@jtraderai/jtrader-mcp-server"
+        "@jtrader.ai/mcp"
       ],
       "env": {
-        "JTRADER_API_KEY": "your_api_key_here_if_needed"
+        "JTRADER_API_KEY": "your_api_key_here_if_needed",
+        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere",
+        "JTRADER_REQUIRE_APPROVAL": "true"
       }
     }
   }

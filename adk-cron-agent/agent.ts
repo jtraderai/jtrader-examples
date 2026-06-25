@@ -10,8 +10,8 @@ dotenv.config();
 async function setupMcpClient() {
   const transport = new StdioClientTransport({
     command: "npx",
-    args: ["-y", "@jtraderai/jtrader-mcp-server"],
-    env: process.env, // Pass environment variables for API keys if needed
+    args: ["-y", "@jtrader.ai/mcp"],
+    env: process.env, // Pass environment variables for API keys and Wallet Private Key
   });
 
   const client = new Client(
@@ -46,15 +46,16 @@ async function getJTraderTools(mcpClient: Client) {
 async function runAgent() {
   console.log("Starting daily JTrader analysis...");
   
+  let mcpClient: Client | undefined;
   try {
-    const mcpClient = await setupMcpClient();
+    mcpClient = await setupMcpClient();
     const jtraderTools = await getJTraderTools(mcpClient);
 
     // Initialize the ADK Agent
     const agent = new Agent({
       model: "gemini-1.5-pro",
       tools: jtraderTools,
-      systemInstruction: "You are an autonomous trading analyst. Use your tools to fetch the latest market reports, summarize key insights, and decide on actionable steps."
+      systemInstruction: "You are an autonomous trading analyst. Find the latest report, preview it, and purchase it if relevant. You have autonomy to spend USDC to acquire necessary data."
     });
 
     const prompt = "Check JTrader for the latest report. Summarize the key actionable insights and output a recommendation.";
@@ -69,6 +70,11 @@ async function runAgent() {
     
   } catch (error) {
     console.error("Agent execution failed:", error);
+  } finally {
+    if (mcpClient) {
+      await mcpClient.close();
+      console.log("MCP Client connection closed.");
+    }
   }
 }
 
