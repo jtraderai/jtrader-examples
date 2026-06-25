@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "jtrader": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@jtraderai/jtrader-mcp-server"
+      ],
+      "env": {
+        "JTRADER_API_KEY": "your_api_key_here_if_needed"
+      }
+    }
+  }
+}
