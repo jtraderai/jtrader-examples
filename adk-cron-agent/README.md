@@ -48,3 +48,10 @@ If you don't want to wait until 4:30 AM, open `agent.ts` and uncomment the `runA
 ## Modifying the Action
 
 This script currently logs the output to the console. To integrate your own execution logic (e.g., executing a trade on a broker or sending an email alert), modify the `// TODO: Act on the insights` section in `agent.ts`.
+
+> **Note:** For executing real trades, the JTrader MCP works best when paired with an agent trading service like the [Robinhood MCP](https://robinhood.com/us/en/support/articles/trading-with-your-agent/).
+
+## Disclaimer
+
+*   **We are not affiliated with Robinhood.**
+*   **These examples are for educational purposes only. They do not constitute financial advice.** Always review your agent's code and test with small amounts or testnets before deploying real capital.
