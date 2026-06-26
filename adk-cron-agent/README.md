@@ -43,7 +43,11 @@ You will see a message:
 Leave this process running. Every morning at 4:30 AM, it will automatically connect to the MCP server, execute the agent loop, and log the report.
 
 ### Testing Immediately
-If you don't want to wait until 4:30 AM, open `agent.ts` and uncomment the `runAgent()` call at the very bottom of the file, then run `npm start` again.
+If you don't want to wait until 4:30 AM, you can trigger an immediate manual run using the `--run-now` flag:
+```bash
+npm run test:now
+```
+Alternatively, you can start the cron job but force an initial run by setting the environment variable: `RUN_NOW=true npm start`.
 
 ## Modifying the Action
 

@@ -4,7 +4,8 @@
   "description": "A scheduled agent using Google ADK and JTrader MCP",
   "main": "agent.ts",
   "scripts": {
-    "start": "ts-node agent.ts"
+    "start": "ts-node agent.ts",
+    "test:now": "ts-node agent.ts --run-now"
   },
   "dependencies": {
     "@google/adk": "^0.1.0",

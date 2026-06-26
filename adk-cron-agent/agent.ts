@@ -1,88 +1,86 @@
-import { Agent } from "@google/adk";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { LlmAgent, Gemini, InMemoryRunner, isFinalResponse, stringifyContent } from "@google/adk";
+import { MCPToolset, StdioConnectionParams } from "@google/adk";
 import cron from "node-cron";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize the MCP Client
-async function setupMcpClient() {
-  const transport = new StdioClientTransport({
-    command: "npx",
-    args: ["-y", "@jtrader.ai/mcp"],
-    env: process.env, // Pass environment variables for API keys and Wallet Private Key
-  });
-
-  const client = new Client(
-    { name: "jtrader-adk-cron", version: "1.0.0" },
-    { capabilities: { tools: {} } }
-  );
-
-  await client.connect(transport);
-  return client;
-}
-
-// Wrap MCP tools into ADK compatible tools
-async function getJTraderTools(mcpClient: Client) {
-  // @ts-ignore - Ignoring strict types for MCP list response
-  const { tools } = await mcpClient.request({ method: "tools/list" });
-  
-  return tools.map((tool: any) => ({
-    name: tool.name,
-    description: tool.description,
-    // ADK relies on standard function wrapping
-    execute: async (args: any) => {
-      const response = await mcpClient.request({
-        method: "tools/call",
-        params: { name: tool.name, arguments: args }
-      });
-      // @ts-ignore
-      return response.content;
-    }
-  }));
-}
+const mcpParams: StdioConnectionParams = {
+  type: 'StdioConnectionParams',
+  serverParams: {
+    command: 'npx',
+    args: ['-y', '@jtrader.ai/mcp'],
+    env: process.env as Record<string, string>,
+  }
+};
 
 async function runAgent() {
   console.log("Starting daily JTrader analysis...");
   
-  let mcpClient: Client | undefined;
+  const mcpToolset = new MCPToolset(mcpParams);
+  
   try {
-    mcpClient = await setupMcpClient();
-    const jtraderTools = await getJTraderTools(mcpClient);
-
+    const model = new Gemini({ model: "gemini-2.5-flash" });
+    
     // Initialize the ADK Agent
-    const agent = new Agent({
-      model: "gemini-1.5-pro",
-      tools: jtraderTools,
-      systemInstruction: "You are an autonomous trading analyst. Find the latest report, preview it, and purchase it if relevant. You have autonomy to spend USDC to acquire necessary data."
+    const agent = new LlmAgent({
+      name: "jtrader_agent",
+      model,
+      tools: [mcpToolset],
+      instruction: `You are an elite, autonomous quantitative trading analyst.
+      
+Your primary objective is to execute a daily research cycle by acquiring and analyzing financial intelligence.
+
+You have access to the JTrader MCP, which provides tools to list, preview, and purchase proprietary research reports.
+You operate fully autonomously and are authorized to spend up to your configured session limit in USDC to acquire reports.
+
+Follow these strict guidelines:
+1. Discover: Use the available tools to list recent reports. Identify the most critical report for the current date.
+2. Evaluate: Fetch metadata or a preview for the identified report to determine if it contains actionable insights.
+3. Acquire: If the report is deemed valuable, securely purchase the full report using your wallet. Ensure you stay within spending limits.
+4. Synthesize: Analyze the full report data, extract the primary thesis, and formulate a clear, actionable trading recommendation.
+5. Summarize: Your final response must include a bulleted summary of the report's insights, the confidence level of the thesis, and your final 'buy/sell/hold' recommendation. Keep the tone professional, objective, and analytical.`
     });
 
+    const runner = new InMemoryRunner({ agent, appName: "jtrader_cron" });
+    await runner.sessionService.createSession({ appName: "jtrader_cron", userId: "cron_user", sessionId: "session_1" });
+    
     const prompt = "Check JTrader for the latest report. Summarize the key actionable insights and output a recommendation.";
     
     // Execute the agent run
-    const response = await agent.run(prompt);
+    const stream = runner.runAsync({
+      userId: "cron_user",
+      sessionId: "session_1",
+      newMessage: { role: "user", parts: [{ text: prompt }] }
+    });
+    
     console.log("=== JTRADER DAILY REPORT ===");
-    console.log(response.text);
+    for await (const event of stream) {
+      if (isFinalResponse(event)) {
+         console.log(stringifyContent(event));
+      }
+    }
     
     // TODO: Act on the insights
-    // e.g., sendEmail(response.text) or executeTrade(response.recommendation)
     
   } catch (error) {
     console.error("Agent execution failed:", error);
   } finally {
-    if (mcpClient) {
-      await mcpClient.close();
-      console.log("MCP Client connection closed.");
-    }
+    await mcpToolset.close();
+    console.log("MCP Client connection closed.");
   }
 }
 
-// Schedule the task to run every morning at 4:30 AM PST
-// Note: CRON assumes server local time. Ensure your server timezone is PST.
-// 30 4 * * * -> 4:30 AM daily
+// Ensure proper cleanup on shutdown
+process.on('SIGINT', () => {
+  console.log('\nShutting down ADK Cron Agent...');
+  process.exit(0);
+});
+
+// Start the cron scheduler
+// "30 4 * * *" means 4:30 AM every day
 cron.schedule("30 4 * * *", () => {
-  console.log("Cron triggered at 4:30 AM.");
+  console.log("Cron triggered! Running ADK agent...");
   runAgent();
 }, {
   scheduled: true,
@@ -90,5 +88,10 @@ cron.schedule("30 4 * * *", () => {
 });
 
 console.log("ADK Cron Agent is running. Scheduled for 4:30 AM PST daily.");
-// To run it immediately for testing, uncomment the line below:
-// runAgent();
+
+// Allow instant manual testing by passing --run-now or setting RUN_NOW=true
+const isTestRun = process.argv.includes('--run-now') || process.env.RUN_NOW === 'true';
+if (isTestRun) {
+  console.log("Instant test mode triggered. Running agent immediately...");
+  runAgent();
+}
