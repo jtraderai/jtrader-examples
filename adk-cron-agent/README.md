@@ -18,16 +18,32 @@ It connects to the JTrader MCP server and uses `node-cron` to automatically wake
    ```
 
 2. **Configure Environment**
-   Create a `.env` file in this directory and add your necessary API keys.
+   Create a `.env` file in this directory and add your necessary API keys. JTrader supports two authentication paths (choose one):
+
    ```bash
+   # Required
    GEMINI_API_KEY="your_google_gemini_api_key"
-   JTRADER_API_KEY="your_jtrader_api_key_here" # Optional if you are providing a wallet private key for SIWX
+
+   # To allow the agent to PURCHASE reports, you MUST provide a wallet:
    JTRADER_WALLET_PRIVATE_KEY="0xYourWalletPrivateKeyHere"
    JTRADER_REQUIRE_APPROVAL="false"
-   JTRADER_MAX_SPEND_LIMIT="2.0"
-   JTRADER_MAX_SESSION_SPEND="5.0"
+
+   # Optional Identity Configuration:
+   # If left empty, the wallet above authenticates the agent autonomously (SIWX).
+   # If provided, the agent authenticates as your human account instead (meaning 
+   # purchases made by the wallet will be tied to you, and it bypasses paywalls 
+   # for reports you already own).
+   JTRADER_API_KEY="your_jtrader_api_key_here" 
    ```
    > **⚠️ SECURITY WARNING:** Never commit your `.env` file if it contains a real private key. Your private key should remain secure and only be stored in your local environment.
+
+### Advanced Configuration (Optional)
+If using Path B (Wallet), the agent is fully autonomous by default. If you wish to set strict limits on how much USDC the agent is allowed to spend, you can add these variables to your `.env`:
+```bash
+JTRADER_MAX_SPEND_LIMIT="2.0"      # Max amount per single report purchase
+JTRADER_MAX_SESSION_SPEND="5.0"    # Max amount for the entire session
+```
+*(Setting these to `-1.0` or omitting them disables the limits.)*
 
 ## Running the Agent
 

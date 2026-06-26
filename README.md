@@ -19,6 +19,13 @@ npx -y @jtrader.ai/mcp
 ```
 *(If your server requires environment variables like API keys, be sure to set them in the respective configuration files.)*
 
+### Authentication Methods
+
+JTrader supports two distinct authentication paths for agents. **Note that a Wallet Private Key is always required if you want your agent to purchase new reports.**
+
+*   **Linked Account (API Key + Wallet):** Uses a persistent `JTRADER_API_KEY`. The agent authenticates as your human user account, instantly inheriting your permissions and access to any previously purchased research reports. If the agent needs to buy a *new* report, it will use the `JTRADER_WALLET_PRIVATE_KEY` to pay for it via x402, and the purchase will be permanently tied to your account.
+*   **Fully Autonomous (Wallet Only):** Uses *only* the `JTRADER_WALLET_PRIVATE_KEY`. The agent authenticates autonomously via Sign-In-With-X (SIWX) and pays for reports dynamically using x402 USDC micropayments over the Base network.
+
 ## Advanced Execution
 
 JTrader is a research engine. If you want your agent to act on its findings by executing real trades, JTrader MCP works best when paired with an agent trading service like the **Robinhood MCP**. You can read more about trading with your agent via Robinhood [here](https://robinhood.com/us/en/support/articles/trading-with-your-agent/).

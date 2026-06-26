@@ -35,8 +35,8 @@ You can also define the MCP server using an `mcp.json` file. This allows you to 
         "@jtrader.ai/mcp"
       ],
       "env": {
-        "JTRADER_API_KEY": "your_api_key_here_if_needed",
-        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere",
+        "JTRADER_API_KEY": "your_api_key_here",
+        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere_if_using_x402",
         "JTRADER_REQUIRE_APPROVAL": "true"
       }
     }
@@ -44,9 +44,13 @@ You can also define the MCP server using an `mcp.json` file. This allows you to 
 }
 ```
 
+> **Configuration Note:** JTrader requires a Wallet Private Key if you want your agent to make **new purchases**.
+> * **Linked Account (API Key + Wallet):** Set `JTRADER_API_KEY` to authenticate as your human account (bypassing paywalls for reports you already own). Set `JTRADER_WALLET_PRIVATE_KEY` so the agent can pay for new reports on your behalf.
+> * **Fully Autonomous (Wallet Only):** Leave `JTRADER_API_KEY` empty. Set `JTRADER_WALLET_PRIVATE_KEY` to let the agent create its own identity and pay for reports itself.
+
 ## Usage
 
 In Cursor's Chat (`Cmd/Ctrl + L`) or Composer (`Cmd/Ctrl + I`), the model will automatically be aware of your tools if the MCP server is running. You can explicitly ask Cursor to use them.
 
 **Example Prompt:**
-> "Please use the JTrader MCP to fetch the latest research report for MSFT and update my trading strategy script accordingly."
+> "Please use the JTrader MCP to check for the latest research reports. If there are any high conviction moonshot plays, summarize the actionable insights and draft a strategy function based on the recommendation."

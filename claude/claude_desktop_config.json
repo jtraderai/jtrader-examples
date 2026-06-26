@@ -7,8 +7,8 @@
         "@jtrader.ai/mcp"
       ],
       "env": {
-        "JTRADER_API_KEY": "your_api_key_here_if_needed",
-        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere",
+        "JTRADER_API_KEY": "your_api_key_here",
+        "JTRADER_WALLET_PRIVATE_KEY": "0xYourWalletPrivateKeyHere_if_using_x402",
         "JTRADER_REQUIRE_APPROVAL": "true"
       }
     }
