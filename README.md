@@ -1,8 +1,8 @@
 # JTrader MCP Examples
 
-This repository contains examples and configuration guides for integrating the [JTrader MCP Server](https://github.com/jtraderai/jtrader-mcp-server) with various AI assistants and development environments.
+This repository contains examples and configuration guides for integrating the [JTrader MCP Server](https://github.com/jtraderai/jtrader-mcp-server) with various AI assistants and development environments to interact with [JTrader.ai](https://jtrader.ai).
 
-The Model Context Protocol (MCP) allows AI models to securely access JTrader's research, data, and tools.
+The Model Context Protocol (MCP) allows AI models to securely access [JTrader.ai](https://jtrader.ai)'s research, data, and tools.
 
 ## Available Guides
 
